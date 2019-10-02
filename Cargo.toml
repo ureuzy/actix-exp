@@ -5,4 +5,4 @@ authors = ["masanetes <m.yamamoto@accelia.net>"]
 edition = "2018"
 
 [dependencies]
-actix-web = "0.7.19"
+actix-web = "1.0.8"
