@@ -1,0 +1,8 @@
+[package]
+name = "actix-exp"
+version = "0.1.0"
+authors = ["masanetes <m.yamamoto@accelia.net>"]
+edition = "2018"
+
+[dependencies]
+actix-web = "0.7.19"
