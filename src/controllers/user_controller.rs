@@ -1,17 +1,25 @@
-use actix_web::{web, Responder};
-use super::super::models;
+use actix_web::{web, Responder, HttpResponse};
+
+use super::super::models::user::{UserJson, User, Users};
+
 
 pub fn get_all_user() -> impl Responder {
-    let a = "" ;
-    format!("{:?}", a)
+
+    let _users: Users = vec![
+        User{id: 1, name: String::from("test_user1"), age: 10},
+        User{id: 2, name: String::from("test_user2"), age: 15}
+    ];
+    let users: &dyn UserJson = &_users;
+
+    HttpResponse::Ok().json(users.to_json())
 }
 
-pub fn get_user(info: web::Path<(u64)>) -> impl Responder {
+pub fn get_user(info: web::Path<(u64)>) -> HttpResponse {
 
-    let _name: String = String::from("test");
-    let _user = models::user::User{id: info.into_inner(), name: _name, age: 10};
+    let _user = User{id: info.into_inner(), name: String::from("test_user"), age: 10};
+    let user: &dyn UserJson = &_user;
 
-    format!("{:?}", _user)
+    HttpResponse::Ok().json(user.to_json())
 }
 
 //pub fn create_user() -> impl Responder {}

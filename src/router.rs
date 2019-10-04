@@ -1,7 +1,6 @@
 use actix_web::{web};
 use super::controllers;
 
-
 pub fn routes(cfg: &mut web::ServiceConfig) {
     cfg
         .route("/", web::get().to(|| "ok"))
