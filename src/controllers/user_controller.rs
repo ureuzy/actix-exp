@@ -11,7 +11,10 @@ pub fn get_all_user() -> impl Responder {
     ];
     let users: &dyn UserJson = &_users;
 
-    HttpResponse::Ok().json(users.to_json())
+    match users.to_json() {
+        Ok(s) => HttpResponse::Ok().json(s),
+        Err(e) => HttpResponse::InternalServerError().json(format!("{:?}", e))
+    }
 }
 
 pub fn get_user(info: web::Path<(u64)>) -> HttpResponse {
@@ -19,7 +22,10 @@ pub fn get_user(info: web::Path<(u64)>) -> HttpResponse {
     let _user = User{id: info.into_inner(), name: String::from("test_user"), age: 10};
     let user: &dyn UserJson = &_user;
 
-    HttpResponse::Ok().json(user.to_json())
+    match user.to_json() {
+        Ok(s) => HttpResponse::Ok().json(s),
+        Err(e) => HttpResponse::InternalServerError().json(format!("{:?}", e))
+    }
 }
 
 //pub fn create_user() -> impl Responder {}
