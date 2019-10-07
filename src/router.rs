@@ -1,5 +1,5 @@
 use actix_web::{web};
-use super::controllers;
+use crate::controllers;
 
 pub fn routes(cfg: &mut web::ServiceConfig) {
     cfg

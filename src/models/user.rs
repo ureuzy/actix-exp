@@ -1,10 +1,8 @@
 use serde::{Serialize, Deserialize};
+use diesel::{Queryable, Insertable};
+use crate::schema::users;
 
-pub trait UserJson {
-    fn to_json(&self) -> Result<String, &'static str>;
-}
-
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Queryable)]
 pub struct User {
     pub id: u64,
     pub name: String,
@@ -13,16 +11,9 @@ pub struct User {
 
 pub type Users = Vec<User>;
 
-impl UserJson for User {
-    fn to_json(&self) -> Result<String, &'static str> {
-        let j = serde_json::to_string(&self).unwrap();
-        Ok(j)
-    }
-}
-
-impl UserJson for Users {
-    fn to_json(&self) -> Result<String, &'static str> {
-        let j = serde_json::to_string(&self).unwrap();
-        Ok(j)
-    }
+#[derive(Deserialize, Insertable)]
+#[table_name = "users"]
+pub struct NewUser<'a> {
+    pub name: &'a str,
+    pub age: i32
 }
