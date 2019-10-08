@@ -1,26 +1,30 @@
+#[macro_use]
+extern crate diesel;
+
 mod controllers;
 mod models;
 mod router;
 mod repository;
-mod schema;
+pub mod schema;
 
-use actix_web::{App, HttpServer, middleware::Logger};
-use crate::repository::mysql_client::{new_mysql_client, MysqlClient};
+use actix_web::{App, web, HttpServer, middleware::Logger};
+use crate::repository::db::{establish_connection};
 use crate::repository::user::UserRepository;
+use actix::SyncArbiter;
+use std::env;
 
 fn main() -> std::io::Result<()> {
 
-    std::env::set_var("RUST_LOG", "actix_web=info");
+    env::set_var("RUST_LOG", "actix_web=info");
     env_logger::init();
 
-    let client: MysqlClient = new_mysql_client();
+    let pool = establish_connection();
 
-    let user = client.store_user();
-
-    HttpServer::new(|| {
+    HttpServer::new(move || {
         App::new()
+            .register_data(web::Data::new(pool.clone()))
             .wrap(Logger::default())
             .configure(router::routes)
     }).bind("0.0.0.0:8080")?.run()
-//
+
 }

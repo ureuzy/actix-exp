@@ -1,15 +1,19 @@
-use super::super::models::user::{User, Users, NewUser};
-use crate::repository::mysql_client::MysqlClient;
-use diesel::RunQueryDsl;
+use crate::models::user::{User, Users, NewUser};
+//use crate::repository::db::MysqlClient;
+use crate::schema::users::dsl::users;
+use serde::export::fmt::Debug;
+use diesel::{RunQueryDsl, MysqlConnection};
+
+pub struct UserRepo{}
 
 pub trait UserRepository {
     fn find_user(&self) -> User;
     fn find_all_user(&self) -> Users;
-    fn store_user(&self);
+    fn store_user(&self, connection: &MysqlConnection, new_user: &NewUser) -> Result<usize, diesel::result::Error>;
     fn delete_user(&self);
 }
 
-impl UserRepository for MysqlClient {
+impl UserRepository for UserRepo {
 
     fn find_user(&self) -> User {
         User{id: 1, name: String::from("test_user1"), age: 10}
@@ -22,16 +26,12 @@ impl UserRepository for MysqlClient {
         ] as Users
     }
 
-    fn store_user(&self) {
-        use crate::schema;
+    fn store_user(&self, connection: &MysqlConnection, new_user: &NewUser) -> Result<usize, diesel::result::Error> {
+        use diesel::RunQueryDsl;
 
-        let new_user = NewUser{ name: "hoge", age: 10};
-
-        diesel::insert_into(user::table)
-            .values(&new_user)
-            .get_result(self.conn)
-            .expect("Error saving new user")
-
+        diesel::insert_into(users)
+            .values(new_user)
+            .execute(connection)
     }
 
     fn delete_user(&self) {}

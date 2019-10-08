@@ -11,9 +11,9 @@ pub struct User {
 
 pub type Users = Vec<User>;
 
-#[derive(Deserialize, Insertable)]
+#[derive(Insertable, Deserialize)]
 #[table_name = "users"]
-pub struct NewUser<'a> {
-    pub name: &'a str,
+pub struct NewUser {
+    pub name: String,
     pub age: i32
 }
