@@ -1,0 +1,9 @@
+CREATE SCHEMA sample;
+
+USE sample;
+
+CREATE TABLE users(
+  id INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
+  name VARCHAR(64),
+  age INTEGER
+);

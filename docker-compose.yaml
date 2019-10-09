@@ -1,0 +1,20 @@
+version: '2'
+services:
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: hoge
+    volumes:
+      - ./entrypoint:/docker-entrypoint-initdb.d
+
+  actix-exp:
+    image: actix-exp:latest
+    container_name: actix-exp
+    ports:
+      - 8080:8080
+    environment:
+      DATABASE_URL: mysql://root:hoge@mysql/sample
