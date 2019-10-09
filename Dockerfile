@@ -4,6 +4,9 @@ WORKDIR /usr/src/app
 
 COPY . .
 
+RUN sudo apt-get update && sudo apt-get install -y \
+    libmysqlclient-dev
+
 RUN cargo build --release --target x86_64-unknown-linux-musl
 
 FROM alpine:latest
