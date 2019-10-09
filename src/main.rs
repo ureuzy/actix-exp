@@ -7,11 +7,9 @@ mod router;
 mod repository;
 pub mod schema;
 
+use std::env;
 use actix_web::{App, web, HttpServer, middleware::Logger};
 use crate::repository::db::{establish_connection};
-use crate::repository::user::UserRepository;
-use actix::SyncArbiter;
-use std::env;
 
 fn main() -> std::io::Result<()> {
 

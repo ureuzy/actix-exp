@@ -4,16 +4,16 @@ use crate::schema::users;
 
 #[derive(Debug, Serialize, Deserialize, Queryable)]
 pub struct User {
-    pub id: u64,
-    pub name: String,
-    pub age: u32
+    pub id: i32,
+    pub name: Option<String>,
+    pub age: Option<i32>
 }
 
 pub type Users = Vec<User>;
 
-#[derive(Insertable, Deserialize)]
+#[derive(Insertable, Deserialize, AsChangeset)]
 #[table_name = "users"]
-pub struct NewUser {
+pub struct UserForm {
     pub name: String,
     pub age: i32
 }

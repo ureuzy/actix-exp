@@ -1,8 +1,8 @@
-use actix_web::{web, HttpResponse, HttpRequest};
-
-use crate::models::user::{User, Users, NewUser};
+use actix_web::{web, HttpResponse};
+use crate::models::user::{UserForm};
 use crate::repository::db::{MysqlPool, MysqlPooledConnection};
 use crate::repository::user::{UserRepository, UserRepo};
+use actix_web::dev::HttpResponseBuilder;
 
 fn mysql_pool_handler(pool: web::Data<MysqlPool>) -> Result<MysqlPooledConnection, HttpResponse> {
     pool.get().map_err(|e| {
@@ -10,31 +10,42 @@ fn mysql_pool_handler(pool: web::Data<MysqlPool>) -> Result<MysqlPooledConnectio
     })
 }
 
-pub fn get_all_user() -> HttpResponse {
-
-    let users: Users = vec![
-        User{id: 1, name: String::from("test_user1"), age: 10},
-        User{id: 2, name: String::from("test_user2"), age: 15}
-    ];
-
-    HttpResponse::Ok().json(users)
+pub fn get_all_user(pool: web::Data<MysqlPool>) -> Result<HttpResponse, HttpResponse> {
+    let connection = mysql_pool_handler(pool)?;
+    let user_repo = UserRepo{conn: &connection};
+    user_repo.find_all()
+        .map(|users| HttpResponse::Ok().json(users))
+        .map_err( |e| HttpResponse::InternalServerError().json(e.to_string()))
 }
 
-pub fn get_user(info: web::Path<(u64)>) -> HttpResponse {
-
-    let user: User = User{id: 1, name: String::from("test_user1"), age: 10};
-
-    HttpResponse::Ok().json(user)
-}
-
-pub fn create_user(new_user: web::Json<NewUser>, pool: web::Data<MysqlPool>) -> Result<HttpResponse, HttpResponse> {
-
-    let pool = mysql_pool_handler(pool)?;
-
-    let a = UserRepo{};
-    let new_user = NewUser{ name: String::from("aaaaaaa"), age: 10};
-
-    a.store_user(&pool, &new_user)
+pub fn get_user(info: web::Path<(i32)>, pool: web::Data<MysqlPool>) -> Result<HttpResponse, HttpResponse> {
+    let connection = mysql_pool_handler(pool)?;
+    let user_repo = UserRepo{conn: &connection};
+    user_repo.find(&info.into_inner())
         .map(|user| HttpResponse::Ok().json(user))
+        .map_err( |e| HttpResponse::InternalServerError().json(e.to_string()))
+}
+
+pub fn create_user(user_form: web::Json<UserForm>, pool: web::Data<MysqlPool>) -> Result<HttpResponseBuilder, HttpResponse> {
+    let connection = mysql_pool_handler(pool)?;
+    let user_repo = UserRepo{conn: &connection};
+    user_repo.store(&user_form)
+        .map(| _ | HttpResponse::Created())
+        .map_err(|e| HttpResponse::InternalServerError().json(e.to_string()))
+}
+
+pub fn update_user(info: web::Path<(i32)>, user_form: web::Json<UserForm>, pool: web::Data<MysqlPool>) -> Result<HttpResponse, HttpResponse> {
+    let connection = mysql_pool_handler(pool)?;
+    let user_repo = UserRepo{conn: &connection};
+    user_repo.update(&info.into_inner(), &user_form)
+        .map(| user | HttpResponse::Ok().json(user))
+        .map_err(|e| HttpResponse::InternalServerError().json(e.to_string()))
+}
+
+pub fn delete_user(info: web::Path<(i32)>, pool: web::Data<MysqlPool>) -> Result<HttpResponseBuilder, HttpResponse> {
+    let connection = mysql_pool_handler(pool)?;
+    let user_repo = UserRepo{conn: &connection};
+    user_repo.delete(&info.into_inner())
+        .map(| _ | HttpResponse::Ok())
         .map_err(|e| HttpResponse::InternalServerError().json(e.to_string()))
 }
