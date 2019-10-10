@@ -8,7 +8,8 @@ mod repository;
 pub mod schema;
 
 use std::env;
-use actix_web::{App, web, HttpServer, middleware::Logger};
+use actix_cors::Cors;
+use actix_web::{http::header, App, web, HttpServer, middleware::Logger};
 use crate::repository::db::{establish_connection};
 
 fn main() -> std::io::Result<()> {
@@ -21,6 +22,14 @@ fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .register_data(web::Data::new(pool.clone()))
+            .wrap(
+                Cors::new()
+                    .send_wildcard()
+                    .allowed_methods(vec!["GET", "POST"])
+                    .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
+                    .allowed_header(header::CONTENT_TYPE)
+                    .max_age(3600),
+            )
             .wrap(Logger::default())
             .configure(router::routes)
     }).bind("0.0.0.0:8080")?.run()
