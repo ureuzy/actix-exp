@@ -1,4 +1,4 @@
-FROM ekidd/rust-musl-builder:stable
+FROM ekidd/rust-musl-builder:stable as builder
 
 WORKDIR /usr/src/app
 
