@@ -1,4 +1,4 @@
-FROM ekidd/rust-musl-builder:stable as builder
+FROM ekidd/rust-musl-builder:latest as builder
 
 WORKDIR /usr/src/app
 
@@ -8,6 +8,7 @@ RUN sudo apt-get update && sudo apt-get install -y \
     libmysqlclient-dev \
     openssl
 RUN sudo chown -R rust:rust /usr/src
+RUN rustup target add x86_64-unknown-linux-musl
 RUN cargo build --release --target x86_64-unknown-linux-musl
 
 FROM alpine:latest

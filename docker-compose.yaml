@@ -12,7 +12,7 @@ services:
       - ./entrypoint:/docker-entrypoint-initdb.d
 
   actix-exp:
-    image: actix-exp:latest
+    image: masanetes/actix-exp:latest
     container_name: actix-exp
     ports:
       - 8080:8080
