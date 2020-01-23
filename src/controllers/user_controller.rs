@@ -10,7 +10,7 @@ fn mysql_pool_handler(pool: web::Data<MysqlPool>) -> Result<MysqlPooledConnectio
     })
 }
 
-pub fn get_all_user(pool: web::Data<MysqlPool>) -> Result<HttpResponse, HttpResponse> {
+pub async fn get_all_user(pool: web::Data<MysqlPool>) -> Result<HttpResponse, HttpResponse> {
     let connection = mysql_pool_handler(pool)?;
     let user_repo = UserRepo{conn: &connection};
     user_repo.find_all()
@@ -18,7 +18,7 @@ pub fn get_all_user(pool: web::Data<MysqlPool>) -> Result<HttpResponse, HttpResp
         .map_err( |e| HttpResponse::InternalServerError().json(e.to_string()))
 }
 
-pub fn get_user(info: web::Path<i32>, pool: web::Data<MysqlPool>) -> Result<HttpResponse, HttpResponse> {
+pub async fn get_user(info: web::Path<i32>, pool: web::Data<MysqlPool>) -> Result<HttpResponse, HttpResponse> {
     let connection = mysql_pool_handler(pool)?;
     let user_repo = UserRepo{conn: &connection};
     user_repo.find(&info.into_inner())
@@ -26,7 +26,7 @@ pub fn get_user(info: web::Path<i32>, pool: web::Data<MysqlPool>) -> Result<Http
         .map_err( |e| HttpResponse::InternalServerError().json(e.to_string()))
 }
 
-pub fn create_user(user_form: web::Json<UserForm>, pool: web::Data<MysqlPool>) -> Result<HttpResponseBuilder, HttpResponse> {
+pub async fn create_user(user_form: web::Json<UserForm>, pool: web::Data<MysqlPool>) -> Result<HttpResponseBuilder, HttpResponse> {
     let connection = mysql_pool_handler(pool)?;
     let user_repo = UserRepo{conn: &connection};
     user_repo.store(&user_form)
@@ -34,7 +34,7 @@ pub fn create_user(user_form: web::Json<UserForm>, pool: web::Data<MysqlPool>) -
         .map_err(|e| HttpResponse::InternalServerError().json(e.to_string()))
 }
 
-pub fn update_user(info: web::Path<i32>, user_form: web::Json<UserForm>, pool: web::Data<MysqlPool>) -> Result<HttpResponse, HttpResponse> {
+pub async fn update_user(info: web::Path<i32>, user_form: web::Json<UserForm>, pool: web::Data<MysqlPool>) -> Result<HttpResponse, HttpResponse> {
     let connection = mysql_pool_handler(pool)?;
     let user_repo = UserRepo{conn: &connection};
     user_repo.update(&info.into_inner(), &user_form)
@@ -42,7 +42,7 @@ pub fn update_user(info: web::Path<i32>, user_form: web::Json<UserForm>, pool: w
         .map_err(|e| HttpResponse::InternalServerError().json(e.to_string()))
 }
 
-pub fn delete_user(info: web::Path<i32>, pool: web::Data<MysqlPool>) -> Result<HttpResponseBuilder, HttpResponse> {
+pub async fn delete_user(info: web::Path<i32>, pool: web::Data<MysqlPool>) -> Result<HttpResponseBuilder, HttpResponse> {
     let connection = mysql_pool_handler(pool)?;
     let user_repo = UserRepo{conn: &connection};
     user_repo.delete(&info.into_inner())
