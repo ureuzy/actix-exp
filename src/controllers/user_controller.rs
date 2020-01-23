@@ -18,7 +18,7 @@ pub fn get_all_user(pool: web::Data<MysqlPool>) -> Result<HttpResponse, HttpResp
         .map_err( |e| HttpResponse::InternalServerError().json(e.to_string()))
 }
 
-pub fn get_user(info: web::Path<(i32)>, pool: web::Data<MysqlPool>) -> Result<HttpResponse, HttpResponse> {
+pub fn get_user(info: web::Path<i32>, pool: web::Data<MysqlPool>) -> Result<HttpResponse, HttpResponse> {
     let connection = mysql_pool_handler(pool)?;
     let user_repo = UserRepo{conn: &connection};
     user_repo.find(&info.into_inner())
@@ -34,7 +34,7 @@ pub fn create_user(user_form: web::Json<UserForm>, pool: web::Data<MysqlPool>) -
         .map_err(|e| HttpResponse::InternalServerError().json(e.to_string()))
 }
 
-pub fn update_user(info: web::Path<(i32)>, user_form: web::Json<UserForm>, pool: web::Data<MysqlPool>) -> Result<HttpResponse, HttpResponse> {
+pub fn update_user(info: web::Path<i32>, user_form: web::Json<UserForm>, pool: web::Data<MysqlPool>) -> Result<HttpResponse, HttpResponse> {
     let connection = mysql_pool_handler(pool)?;
     let user_repo = UserRepo{conn: &connection};
     user_repo.update(&info.into_inner(), &user_form)
@@ -42,7 +42,7 @@ pub fn update_user(info: web::Path<(i32)>, user_form: web::Json<UserForm>, pool:
         .map_err(|e| HttpResponse::InternalServerError().json(e.to_string()))
 }
 
-pub fn delete_user(info: web::Path<(i32)>, pool: web::Data<MysqlPool>) -> Result<HttpResponseBuilder, HttpResponse> {
+pub fn delete_user(info: web::Path<i32>, pool: web::Data<MysqlPool>) -> Result<HttpResponseBuilder, HttpResponse> {
     let connection = mysql_pool_handler(pool)?;
     let user_repo = UserRepo{conn: &connection};
     user_repo.delete(&info.into_inner())
